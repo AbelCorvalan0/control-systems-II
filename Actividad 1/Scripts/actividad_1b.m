@@ -1,7 +1,7 @@
 clear all; close all; clc;
 
-data= readtable('../Resources/Curvas_Medidas_RLC.xls');
-%t= csvread('../Resources/Curvas_Medidas_RLC.xls',);
+data= readtable('../Resources/Curvas_Medidas_RLC_2025.xls');
+%t= csvread('../Resources/Curvas_Medidas_RLC_2025.xls',);
 
 dataT= table2array(data)';
 size(dataT);
@@ -11,21 +11,24 @@ I= dataT(2,:);
 Vc= dataT(3,:);
 
 yyaxis left;
-plot(t, Vc, 'b-', 'LineWidth', 2)
+plot(t, Vc, 'b-', 'LineWidth', 2);
 ylabel('Voltage [V]');
 hold on;
 
 yyaxis right;
-plot(t, I, 'r-', 'LineWidth', 2)
+plot(t, I, 'r-', 'LineWidth', 2);
 ylabel('Current [A]');
 hold off;
 
 xlabel('Time [Seconds]');
-title('Output RLC Measure');
+% Zoom
+%xlim([0, 0.065]);
+title('RLC Output Measure');
 
-legend('Vc: Voltage (red)', 'I: Vurrent (blue)')
+legend('Vc: Voltage (red)', 'I: Current (blue)');
 grid on;
 
+% Plot Step Response.  
 figure(2);
 plot(t, Vc, 'b-', 'LineWidth', 2);
 xlabel('Time [Seconds]');
@@ -183,17 +186,17 @@ for i=1:length(t)
     end
 end
 
-figure(4)
+figure(4);
 plot(t, u);
 grid on;
-xlim([0, 0.02])
-ylim([-13, 13])
+xlim([0, 0.02]);
+ylim([-13, 13]);
 xlabel('Time [Seconds]');
 ylabel('Voltage [V]');
 title('Input Signal');
 
 %%%% State-Space Model Simulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure(5)
+figure(5);
 lsim(sys, u, t);
 d= lsim(sys, u, t);
 %size(z)

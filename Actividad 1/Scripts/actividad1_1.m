@@ -1,17 +1,9 @@
 clc; clear all;
 close all;
 
-n= 0;
-switch n
-    case 0
-        R= 4.7e3;
-        L= 10e-6;
-        C= 100e-9;
-    case 1
-        R= 5.6e3;
-        L= 10e-6;
-        C= 100e-9;
-end
+R= 220;
+L= 500e-3;
+C= 2.2e-6;
     
 A= [-R/L -1/L; 1/C 0];
 B= [1/L; 0];
@@ -23,11 +15,15 @@ sys= ss(A, B, c, D);
 
 %%%%%% Input signal %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Parameters
+% Parameters %%%
+% Steps.
 h= 1e-5;
-t= 0: h: 2.499999e-2; 
+% Time vector
+t= 0: h: 2.499999e-2;
+% Amplitude vector.
 u= zeros(size(t));
 var= 0;
+% Init time.
 tinit= 5e-3;
 T= 1e-3;
 
@@ -47,18 +43,18 @@ for i=1:length(t)
     end
 end
 
-figure(1)
+figure(1);
 plot(t, u);
 grid on;
-xlim([0, 0.02])
-ylim([-13, 13])
+xlim([0, 0.02]);
+ylim([-13, 13]);
 xlabel('Time [Seconds]');
 ylabel('Voltage [V]');
 title('Input Signal');
 
 
 %%%% State-Space Model Simulation %%%%%%%%%%%%%%%%%
-figure(2)
+figure(2);
 lsim(sys, u, t);
 z= lsim(sys, u, t);
 %size(z)
@@ -67,13 +63,9 @@ data= [t', z];
 grid on;
 
 %%%%% Generate .csv file %%%%%%%%%%%%%%%%%%%%
-switch n
-    case 0
-        %csvwrite('simulation1.csv', data);
-        filename= 'Data Generated/simulation1.csv';
-    case 1
-        filename= 'Data Generated/simulation2.csv';
-end
+%csvwrite('simulation1.csv', data);
+filename= 'Data Generated/simulation1.csv';
+
 
 headers= {'Time [Seconds]', 'Amplitude [V]'};
 fi= fopen(filename, 'w');
