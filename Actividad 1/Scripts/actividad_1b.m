@@ -8,10 +8,10 @@ size(dataT);
 
 t= dataT(1,:);
 I= dataT(2,:);
-Vc= dataT(3,:);
+Vcap= dataT(3,:);
 
 yyaxis left;
-plot(t, Vc, 'b-', 'LineWidth', 2);
+plot(t, Vcap, 'b-', 'LineWidth', 2);
 ylabel('Voltage [V]');
 hold on;
 
@@ -28,14 +28,17 @@ title('RLC Output Measure');
 legend('Vc: Voltage (red)', 'I: Current (blue)');
 grid on;
 
-% Plot Step Response.  
+% Plotting Step Response.  
 figure(2);
-plot(t, Vc, 'b-', 'LineWidth', 2);
+plot(t, Vcap, 'b-', 'LineWidth', 2);
 xlabel('Time [Seconds]');
 ylabel('Voltage [V]');
-xlim([0, 0.04]);
+xlim([0.008, 0.014]);
 ylim([0, 13]);
 grid on;
+
+% We've a step response with feature overdamped
+% due to different real poles.
 
 %%%%% Solve %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -71,9 +74,9 @@ t0= t;
 y= dataT(3,:);
 
 % First point time.
-i= 151;
+i= 1050;
 t_inic= t0(i);
-h= 50;
+h= 60;
 % Obtain t1 to apply method.
 t_t1= t0(i);
 y_t1= y(i);
@@ -81,8 +84,8 @@ y_t1= y(i);
 t_2t1= t0(i+h);
 y_2t1= y(i+h);
 % Obtain t3
-t_3t1= t0(i+2*h);
-y_3t1= y(i+2*h);
+t_3t1= t0(i+(2*h));
+y_3t1= y(i+(2*h));
 
 % Normalize gain. Add abs(y(end)), because 'end' take value= -12 (Input signal).
 K= abs(y(end))/(stepAmplitude);
@@ -102,7 +105,7 @@ beta= (2*(k1^3)+ 3*k1*k2+ k3- sqrt(b))/(sqrt(b));
 
 % Calculating the estimates of the time constants T1, T2 and T3.
 T1_e= -1*(t_t1)/(log(alfa1));
-T2_e= -1*(t_t1)/(log(alfa2));
+T2_e= -1*(t_t1)/(log(alfa2)); %imaginary from alfa2
 T3_e= beta*(T1_e- T2_e)+ T1_e;
 
 ii= 1;
@@ -115,21 +118,31 @@ T2_e= sum(T2/ length(T2));
 T3_e= sum(T3/ length(T3));
 
 s= tf('s');
-sys= K/((T1_e*s+1)*(T2_e*s+1))
+sys= K/((T1_e*s+1)*(T2_e*s+1));
 [num, den]= tfdata(sys, 'v');
 
-figure(3);
-step(sys*exp(-s*0.01), 'r-', 2);
+%figure(3);
+%%%%%%% FIX
+% How to obtain step response with delay.
+[ys, ts]= step(sys*exp(-s*0.01), 'r-', 0.12)
+ylim([0, 13]);
 title('Approximation');
 grid on;
-legend('Real', 'Approximated');
+figure(3);
+%plot(ts, ys, t, Vcap);
+plot(t, Vcap);
+ylim([0, 13]);
+xlim([0.008, 0.014]);
+legend('Approximated', 'Real');
 hold off;
 
-z= step(sys*exp(-s*0.01), 'r-', 2);
-z_= z(1:1001);
+%z= step(sys*exp(-s*0.01), 'r-', 2);
+%z_= z(1:1001);
+
 %size(z_)
 %size(t')
-tab= [t', z_];
+
+%tab= [t', z_];
 %%%%% Generate .csv to approximated step response %%%%%%%%%%%%%%%%%%%%%%%%%
 filename= 'Data Generated/approximation.csv';
 headers= {'Time [Seconds]', 'Amplitude [V]'};
