@@ -14,7 +14,7 @@ $$ y_{3}(0.016seg)=  11.99V$$
 
 Se obtiene una respuesta al escalón con una constante de tiempo mas lenta del sistema.
 
-![Approximation vs Measurement](img/ApproximationMeasured1.png)
+![Approximation vs Measurement](img/ApproximationMeasurement1.png)
 
 Con valores de tiempo que resultan imágenes de valor de tensión cercanos a la ganancia en estado de régimen se tiene que los valores de las constantes de tiempo estimadas $T_{1}, \, T_{2}$ son complejos (No es válido para la Función Transferencia del caso).
 
