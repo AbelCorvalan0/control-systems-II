@@ -160,7 +160,7 @@ poles(sys)
 
 tab= [real(ts), real(ys)]
 %%%%% Generate .csv to approximated step response %%%%%%%%%%%%%%%%%%%%%%%%%
-filename= 'Data Generated/approximation.csv';
+filename= 'Generated Data/approximation.csv';
 headers= {'Time [Seconds]', 'Amplitude [V]'};
 fi= fopen(filename, 'w');
 fprintf(fi, '%s,%s\n', headers{:});
@@ -236,7 +236,7 @@ grid on;
 
 %%%%% Generate .csv file %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %csvwrite('simulation1.csv', data);
-filename= 'Data Generated/simulation1.csv';
+filename= 'Generated Data/simulation1.csv';
 
 headers= {'Time [Seconds]', 'Amplitude [V]'};
 fi= fopen(filename, 'w');
