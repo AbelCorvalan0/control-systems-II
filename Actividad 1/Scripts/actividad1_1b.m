@@ -52,14 +52,14 @@ tsim= 20e-3
 % Define simulation step
 h= tsim/tint
 
-%% Integration.
-% Define arrays.
+%% Define arrays for integration process 
 % t= 0: h: tsim;
 t= linspace(0, tsim, h);
 u= linspace(0, 0, h);
 hlf= length(t)/2; 
 swTime= 0;
 
+%% Integration
 for i= 1: h-1
     swTime = swTime+1;
     if (swTime >= hlf)
@@ -79,6 +79,8 @@ for i= 1: h-1
     Vrl(ii)= x(2);
 end
 
+
+%% Plot system response
 figure(1)
 plot(t, y)
 ylim([-9, 5])

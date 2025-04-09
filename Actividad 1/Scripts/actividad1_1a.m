@@ -1,43 +1,46 @@
-%% Sistemas de Control II - FCEFyN (UNC)
+%% Sistemas de Control II - FCEFyN (UNC) 
 %
 % Asignar valores a R= 220Ohm, L= 500mHy, y C= 2,2uF. Obtener simulaciones 
 % que permitan estudiar la dinámica del sistema, con una entrada de tensión 
 % escalón de 12V, que cada 10ms cambia de signo.
+%
 %%
 
 clc; clear all;
 close all;
 
-%%
-% State variables representation of the system.
+%% State variables representation of the system.
 % [xp] = A*[x] + B*[u]
 % [y]  = C*[x] + D*[u]
-%%
+
+%% Design Values
 
 R= 220;
 L= 500e-3;
 C= 2.2e-6;
 
-% Operation point.
+%% Operation point.
 Il(1)  = 0;
-Vcl(1) = 0;
+Vcl(1) = 0; 
 y(1)   = 0;
 
 Xop    = [0 0]';
 x      = [Il(1) Vcl(1)]';
 
-% State variables.
+%% State variables.
 A= [-R/L -1/L; 1/C 0];   % State matrix
 B= [1/L; 0];             % Input matrix
 c= [R 0];                % Output matrix
 D= 0;                    % Direct transmission matrix
 
-% Function state space model
+%% Function state space model
 sys= ss(A, B, c, D);
 
 [num, den]= ss2tf(A, B, c, D);
+% Build transfer function.
 G= tf(num, den)
 
+%% System Analysis
 % Obtain poles.
 poles= pole(G)
 damp(G)
@@ -48,7 +51,7 @@ zeta(1);
 % zeta= 0.2310 
 % 0<zeta<1 underdamped temporal response.
 
-% Calculate damped angular frequency (\omega_{d}).
+% Calculate damped angular frequency (wd).
 wd= wn(1)*sqrt(1-(zeta(1)^2))
 %wd= 927.7343 rad/seg.
 
@@ -59,27 +62,27 @@ Tn= (2*pi)/wd;
 tint= 10*Tn
 
 % Simulation time.
-%tsim= 3*log(0.05)/(real(poles(1)))
-tsim= 10000;
+% tsim= 3*log(0.05)/(real(poles(1)))
+tsim= 10000;     % Arbitrarily determinated.
 % Three times of time which exp(lambda2*t) reachs 5%.
 
 h= tsim/tint;
 
-%%%%%% Input signal %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% tiempo de integración
-h= 0.0001;  % 0.1ms de paso
+%% Input signal
+% Step time.
+h= 0.0001;  % Step of 0.1ms.
 
-t= 0: h: 0.1999;    % Vector de tiempo de 0 a 200ms con paso de 0.1ms 
-                   % (definido por h). Se tienen 2000 posiciones.
-u= zeros(size(t));
-variable= 0; % Cuenta 10ms/h= 100 pasos
-             % Se cambia de estado cada 10ms
+t= 0: h: 0.1999;    % Time vector ranged 0s until 200ms (step= 0.1ms). 
+                    % (defined by h). We have 2000 positions.
+u= zeros(size(t));  % Input signal.
+variable= 0; % Counts 10ms/h= 100 steps.
+             % Switch voltage each 10ms.
 
 for i = 1:length(t)
     
     if t(i) <= 0.02
-        u(i)= 0; %primeros 20ms vale cero
-    elseif t(i) > 0.02 && variable<=(0.01/h)  % Realiza 100 pasos= 10ms.
+        u(i)= 0; % Firs 20ms takes zero (0) value.
+    elseif t(i) > 0.02 && variable<=(0.01/h)  % Take 100 steps= 10ms.
         u(i) = 12;
         variable=variable+1;
     elseif t(i) > 0.02 && variable>(0.01/h)
@@ -92,6 +95,8 @@ for i = 1:length(t)
     end
 end
 
+%% Plot input signal (u)
+
 figure(1);
 plot(t, u);
 grid on;
@@ -102,7 +107,7 @@ ylabel('Voltage [V]');
 title('Input Signal');
 
 
-%%%% State-Space Model Simulation %%%%%%%%%%%%%%%%%
+%% State-Space Model Simulation
 figure(2);
 lsim(sys, u, t);
 xlim([0, 0.06])
@@ -112,7 +117,7 @@ z= lsim(sys, u, t);
 data= [t', z];
 grid on;
 
-%%%%% Generate .csv file %%%%%%%%%%%%%%%%%%%%
+%% Generate .csv file
 %csvwrite('simulation1.csv', data);
 filename= 'Generated Data/simulation1.csv';
 
