@@ -61,19 +61,25 @@ hlf= length(t)/2;
 swTime= 0;
 
 for i= 1: h-1
- 
-u(i) = 12;  
+    swTime = swTime+1;
+    if (swTime >= hlf)
+        swTime = 0;
+        vin = vin*(-1);
+    end
 
-xp= A*(x-Xop)+B*u(i);
-x= x+ xp*tint;
-Y= c*(x-Xop)+D*u(i);
+    u(i) = vin;  
 
-ii= i+1;
-y(ii)= Y(1);
-Il(ii)= x(1);
-Vrl(ii)= x(2);
+    xp= A*(x-Xop)+B*u(i);
+    x= x+ xp*tint;
+    Y= c*(x-Xop)+D*u(i);
+
+    ii= i+1;
+    y(ii)= Y(1);
+    Il(ii)= x(1);
+    Vrl(ii)= x(2);
 end
 
 figure(1)
 plot(t, y)
-ylim([-5, 5])
+ylim([-9, 5])
+grid;
