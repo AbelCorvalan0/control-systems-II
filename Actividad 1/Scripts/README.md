@@ -1,5 +1,19 @@
 # Actividad Práctica 1
 
+# Desarrollo del trabajo práctico.
+
+## Item
+
+Se contrasta la función transferencia de segundo orden con la función transferencia del circuito RLC.
+
+![funciónTransferenciaGeneral2doOrden](img/funciónTransferenciaGeneral2doOrden.png)
+
+Función transferencia del circuito RLC:
+
+
+
+# Dudas
+
 ## Ítem 2
 
 En el archivo Curvas_Medidas_RLC_2025.xls (datos en la hoja 1 y etiquetas en la hoja 2) están las series de datos que sirven para deducir los valores de R, L y C del circuito. Emplear el método de la respuesta al escalón, tomando como salida la tensión en el capacitor.
