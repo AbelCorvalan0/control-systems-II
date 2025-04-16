@@ -92,8 +92,7 @@ y= dataT(:,3);
 i= 1074;
 t_inic= t0(i);
 % Define step.
-h= 500;
-% h= 55;
+h= 75;
 % Obtain y1.
 t_t1= t0(i);
 y_t1= y(i)
@@ -149,27 +148,20 @@ sys1= (K*exp(-s*0.01))/((T1_e*s+1)*(T2_e*s+1))
 % [num, den]= tfdata(sys, 'v');
 
 % Plot approximated step response
-% figure(2);
-% %%%%% FIX
 % Obtain step response with delay.
 % [ys, ts]= step(sys*exp(-s*0.01), 'r-', 0.16);
-% [ys, ts]= step(sys*exp(-s*0.01), 'r-');
-% ylim([0, 13]);
-% title('Approximation');
-% grid on;
-% figure(3);
-% plot(ts, ys, t, Vcap);
-% plot(t, Vcap);
-% plot(ts, ys);
-% title('Approximation vs Measurement');
-% xlabel('Amplitude[V]')
-% ylabel('Time[seg]')
-% grid on;
-% ylim([0, 13]);
-% xlim([0.008, 0.014]);
-% legend('Approximated', 'Measured');
-% hold off;
-% 
+figure(2)
+[ys, ts]= step(sys1, 'r-', 0.5);
+plot(t, Vcap, 'b-');
+hold on;
+plot(ts, ys, 'r-');
+xlim([0, 0.025]);
+ylim([0, 13]);
+legend('Measured', 'Approximated');
+title('Approximation vs Measurement');
+grid on;
+
+
 % size(ys)
 % size(ts)
 % 
