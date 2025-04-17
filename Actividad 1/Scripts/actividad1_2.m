@@ -20,7 +20,7 @@ dataT= table2array(data);
 
 % Obtain time(t), capacitor voltage(Vcap) and current(I) array.
 t= dataT(:,1);
-I= dataT(:,2);
+Is= dataT(:,2);
 Vcap= dataT(:,3);
 
 % Plot capacitor voltage and current
@@ -37,7 +37,7 @@ grid on;
 hold on;
 
 subplot(2, 1, 2);
-plot(t, I, 'r-', 'LineWidth', 1);
+plot(t, Is, 'r-', 'LineWidth', 1);
 title('Current I');
 ylabel('Current [A]');
 xlabel('Time [seg]');
@@ -89,19 +89,19 @@ y= dataT(:,3);
 % Take three point to apply Chen Method.
 % First point time.
 %i= 1251;
-i= 1074;
+i= 1051;
 t_inic= t0(i);
 % Define step.
-h= 75;
+h= 55;
 % Obtain y1.
 t_t1= t0(i);
-y_t1= y(i)
+y_t1= y(i);
 % Obtain y2.
 t_2t1= t0(i+h);
-y_2t1= y(i+h)
+y_2t1= y(i+h);
 % Obtain y3.
 t_3t1= t0(i+(2*h));
-y_3t1= y(i+(2*h))
+y_3t1= y(i+(2*h));
 
 % Normalize gain
 % Add abs(y(end)), because 'end' take value= -12V (Alternate input signal).
@@ -137,19 +137,18 @@ T2(ii)= T2_e;
 T3(ii)= T3_e;
 
 % Enhancing estimation accuracy.
-T1_e= sum(T1/ length(T1));
-T2_e= sum(T2/ length(T2));
-T3_e= sum(T3/ length(T3));
+T1_e= sum(T1/length(T1));
+T2_e= sum(T2/length(T2));
+T3_e= sum(T3/length(T3));
 
 % Build Transfer Function
 s= tf('s');
 sys= (K)/((T1_e*s+1)*(T2_e*s+1));
-sys1= (K*exp(-s*0.01))/((T1_e*s+1)*(T2_e*s+1))
+sys1= (sys*exp(-s*0.01))
 % [num, den]= tfdata(sys, 'v');
 
 % Plot approximated step response
 % Obtain step response with delay.
-% [ys, ts]= step(sys*exp(-s*0.01), 'r-', 0.16);
 figure(2)
 [ys, ts]= step(sys1, 'r-', 0.5);
 plot(t, Vcap, 'b-');
@@ -160,92 +159,32 @@ ylim([0, 13]);
 legend('Measured', 'Approximated');
 title('Approximation vs Measurement');
 grid on;
+tab= [ts, ys];
 
+figure(3);
+plot(t, Vcap, 'b-', 'LineWidth', 1);
+xlim([0, 0.025]);
+ylim([0, 13]);
+grid on;
 
-% size(ys)
-% size(ts)
-% 
-% tab= [real(ts), real(ys)];
-% Generate .csv to approximated step response 
-% filename= 'Generated Data/approximation.csv';
-% headers= {'Time [Seconds]', 'Amplitude [V]'};
-% fi= fopen(filename, 'w');
-% fprintf(fi, '%s,%s\n', headers{:});
-% fclose(fi);
-% writematrix(tab, filename, 'WriteMode', 'append');
-% 
-% Obtain Parameters R, L, C 
-% 
-% Assume resistance value.
-% R= 220;
-% 
-% LC= den(1, 1);
-% RC= den(1, 2);
-% 
-% C= real(RC/R)
-% L= real(LC/C)
-% 
-% Build State-Space 
-% 
-% A= [-R/L -1/L; 1/C 0];
-% B= [1/L; 0];
-% c= [R 0];
-% D= 0;
-% 
-% Function state space model
-% sys= ss(A, B, c, D);
-% 
-% Input signal 
-% 
-% Parameters
-% h= 1e-5;
-% t= 0: h: 29.999e-3; 
-% u= zeros(size(t));
-% var= 0;
-% tinit= 5e-3;
-% T= 10e-3;
-% 
-% for i=1:length(t)
-%     if t(i)<= tinit
-%         u(i)= 0;
-%     elseif t(i)> tinit && var<= (T/h)
-%         u(i)= 12;
-%         var= var+1;
-%     elseif t(i)> tinit && var> (T/h)
-%         u(i)= -12;
-%         var= var+1;
-%     end
-% 
-%     if var> (2*(T/h))
-%         var= 0;
-%     end
-% end
-% 
-% Plot input signal 
-% figure(4);
-% plot(t, u);
-% grid on;
-% xlim([0, 0.030]);
-% ylim([-13, 13]);
-% xlabel('Time [Seconds]');
-% ylabel('Voltage [V]');
-% title('Input Signal');
-% 
-% State-Space Model Simulation
-% figure(5);
-% lsim(sys, u, t);
-% d= lsim(sys, u, t);
-% size(z)
-% size(t')
-% data= [t', d];
-% grid on;
-% 
-% %%%% Generate .csv file %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% csvwrite('simulation1.csv', data);
-% filename= 'Generated Data/simulation1.csv';
-% 
-% headers= {'Time [Seconds]', 'Amplitude [V]'};
-% fi= fopen(filename, 'w');
-% fprintf(fi, '%s,%s\n', headers{:});
-% fclose(fi);
-% writematrix(data, filename, 'WriteMode', 'append');
+%% Generate .csv to approximated step response 
+filename= 'Generated Data/approximation.csv';
+headers= {'Time [Seconds]', 'Amplitude [V]'};
+fi= fopen(filename, 'w');
+fprintf(fi, '%s,%s\n', headers{:});
+fclose(fi);
+writematrix(tab, filename, 'WriteMode', 'append');
+
+%% Obtain Parameters R, L, C.
+% Capacitor value calculate.
+
+deltaV= (y(1145)-y(1208))/(t0(1145)-t0(1208));
+it= Is(1145);
+
+C= it/(deltaV);
+% FT= (1/(LC))/(s^2+s*(R/L)+(1/L*C))
+FTn= minreal(sys)
+[num, den]= tfdata(FTn, 'v');
+
+L= 1/(den(3)*C);
+R= den(2)*L;
