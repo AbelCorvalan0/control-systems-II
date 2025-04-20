@@ -59,7 +59,7 @@ wd= wn(1)*sqrt(1-(zeta(1)^2))
 Tn= (2*pi)/wd;
 
 % Integration time. 
-tint= 10*Tn
+tint= Tn/100
 
 % Simulation time.
 % tsim= 3*log(0.05)/(real(poles(1)))

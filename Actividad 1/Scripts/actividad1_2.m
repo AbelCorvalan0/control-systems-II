@@ -181,10 +181,10 @@ writematrix(tab, filename, 'WriteMode', 'append');
 deltaV= (y(1145)-y(1208))/(t0(1145)-t0(1208));
 it= Is(1145);
 
-C= it/(deltaV);
+C= it/(deltaV)
 % FT= (1/(LC))/(s^2+s*(R/L)+(1/L*C))
 FTn= minreal(sys)
 [num, den]= tfdata(FTn, 'v');
 
-L= 1/(den(3)*C);
-R= den(2)*L;
+L= 1/(den(3)*C)
+R= den(2)*L

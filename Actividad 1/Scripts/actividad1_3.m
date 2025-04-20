@@ -1,75 +1,86 @@
+clear all; close all; clc;
 %%% Obtain Parameters R, L, C %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-R= 220;
-%[num, den]
-%size(den)
+R= 127.7277;
+C= 3.9434e-06;
+L= 0.0027;
 
-LC= den(1, 1);
-RC= den(1, 2);
+%% Simulate State-Space 
+num= [C 0];
+den= [L*C C*R 1];
+s= tf('s');
+G= tf(num, den)
+[A, B, c, D]= tf2ss(num, den);
+p= pole(G);
+% Fastest dynamic pole.
+p(1)
+% Slower dynamic pole.
+p(2)
 
-C= RC/R;
-L= LC/C;
+vin= 12;
+tint = log(0.95)/p(1)
+tsim = log(0.05)/p(2);
+T= 20e-3;
+tsim= 6.5*T;
+h= tsim/tint;
+t= linspace(0, tsim, h);
+u= linspace(0, 0, h);
+var=0;
 
-%%%%% Simulate State-Space %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hacer variable las operaciones que se repiten
+% por ejemplo round(T/tint)
+h10m= round(T/tint);
 
-A= [-R/L -1/L; 1/C 0];
-B= [1/L; 0];
-c= [R 0];
-D= 0;
-
-% Function state space model
-sys= ss(A, B, c, D);
-
-%%%%%% Input signal %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Parameters
-h= 1e-5;
-t= 0: h: 2.499999e-2; 
-u= zeros(size(t));
-var= 0;
-tinit= 5e-3;
-T= 1e-3;
-
-for i=1:length(t)
-    if t(i)<= tinit
+for i=1: h-1
+    if t(i)<= 0.03
         u(i)= 0;
-    elseif t(i)> tinit && var<= (T/h)
+        %rlcModel();
+    elseif t(i)> T && var<=(h10m)
         u(i)= 12;
         var= var+1;
-    elseif t(i)> tinit && var> (T/h)
+        %rlcModel();
+    elseif t(i)>= T && var>(h10m)
         u(i)= -12;
         var= var+1;
+        %rlcModel();
     end
 
-    if var> (2*(T/h))
-        var= 0;
+    if var>(2*h10m)
+        var=0;
+        u(i)= 0;
+        %rlcModel();
     end
+    rlcModel(A, B, c, D, u);
 end
 
-figure(1);
-plot(t, u);
-grid on;
-xlim([0, 0.02]);
-ylim([-13, 13]);
-xlabel('Time [Seconds]');
-ylabel('Voltage [V]');
-title('Input Signal');
+% for i=1: h-1
+%     if t(i)<= T/2
+%         u(i)= 0;
+%     elseif t(i)> T && var<=(h10m)
+%         u(i)= 12;
+%         var= var+1;
+%     elseif t(i)> T && var=(2*h10m)
+%         u(i)= -12;
+%         var= var+1;
+%     elseif t(i)< 4*T && var<=(3*h10m)
+%         u(i)= 12;
+%         var= var+1;
+%     elseif t(i)<= 5*T && var<=(4*h10m)
+%         u(i)= -12;
+%         var= var+1;
+%     elseif t(i)<= 6*T && var<=(5*h10m)
+%         u(i)= 12;
+%         var= 0;
+%     end
+% end
 
-%%%% State-Space Model Simulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure(2);
-lsim(sys, u, t);
-d= lsim(sys, u, t);
-%size(z)
-%size(t')
-data= [t', d];
-grid on;
-
+plot(t, u)
 %%%%% Generate .csv file %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %csvwrite('simulation1.csv', data);
-filename= 'Data Generated/simulation1.csv';
-
-headers= {'Time [Seconds]', 'Amplitude [V]'};
-fi= fopen(filename, 'w');
-fprintf(fi, '%s,%s\n', headers{:});
-fclose(fi);
-writematrix(data, filename, 'WriteMode', 'append');
+% filename= 'Data Generated/simulation1.csv';
+% 
+% headers= {'Time [Seconds]', 'Amplitude [I]'};
+% fi= fopen(filename, 'w');
+% fprintf(fi, '%s,%s\n', headers{:});
+% fclose(fi);
+% writematrix(data, filename, 'WriteMode', 'append');

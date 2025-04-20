@@ -30,7 +30,6 @@ D= 0;                    % Direct transmission matrix.
 G= tf(num, den)     % Build system transfer function. 
 poles= pole(G)
 
-
 %% Obtain natural frequency (wn), damping ratio (psita).
 % Obtain these parameters to calculate integration time.
 [wn, zeta]= damp(G);
@@ -78,7 +77,6 @@ for i= 1: h-1
     Il(ii)= x(1);
     Vrl(ii)= x(2);
 end
-
 
 %% Plot system response
 figure(1)

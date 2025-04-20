@@ -30,7 +30,7 @@ sol= solve([eq1, eq2, eq3],[wr, va, tita]);
 
 disp('Original transfer function: ')
 TFnn= sol.wr/sol.va
-[num, den]= numden(TFnn);
+[num, den]= numden(TFnn)
 
 %% Normalize Transfer Function
 poly_num= Ki/(J*Laa);
