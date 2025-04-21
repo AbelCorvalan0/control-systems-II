@@ -1,4 +1,4 @@
-function [X]= chenMethod(y1, y2, y3, K, deltaTime, delayTime)
+function [X]= chenMethod(y1, y2, y3, K, deltaTime, delayTime, zr)
 %clear all; close all; clc;
 
 % Calculating k1, k2, k3.
@@ -39,7 +39,14 @@ T3_e= sum(T3/length(T3));
 
 % Build Transfer Function
 s= tf('s');
-% sys= (K*(T3_e*s+1)*exp(-s*delayTime))/((T1_e*s+1)*(T2_e*s+1));
-sys= (K*exp(-s*delayTime))/((T1_e*s+1)*(T2_e*s+1));
+switch zr
+    case 0
+        sys= (K*exp(-s*delayTime))/((T1_e*s+1)*(T2_e*s+1));
+    case 1
+        sys= (K*(T3_e*s+1)*exp(-s*delayTime))/((T1_e*s+1)*(T2_e*s+1));
+    otherwise
+        disp('ERROR');
+end
+
 X= [sys];
 end

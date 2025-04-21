@@ -25,7 +25,7 @@ B= [1/L; 0];             % Input matrix.
 c= [R 0];                % Output matrix.
 D= 0;                    % Direct transmission matrix.
 
-%% Obtain Transfer Function.
+%% Obtain Transfer Function. 
 [num, den]= ss2tf(A, B, c, D);
 G= tf(num, den)     % Build system transfer function. 
 poles= pole(G)

@@ -3,7 +3,7 @@ clear all; close all; clc;
 data= readtable('../Resources/Curvas_Medidas_Motor_2025_v.xls');
 data;
 % Convert table to array. Apply transpose.
-dataT= table2array(data)
+dataT= table2array(data);
 
 % Obtain time(t).
 t  = dataT(:,1);

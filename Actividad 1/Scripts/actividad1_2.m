@@ -132,24 +132,27 @@ T3_e= beta*(T1_e- T2_e)+ T1_e;
 
 % Add estimates of the time constants T1, T2, T3.
 ii= 1;
+disp('Constantes de tiempo: ')
 T1(ii)= T1_e;
 T2(ii)= T2_e;
 T3(ii)= T3_e;
 
 % Enhancing estimation accuracy.
-T1_e= sum(T1/length(T1));
-T2_e= sum(T2/length(T2));
-T3_e= sum(T3/length(T3));
+T1_e= sum(T1/length(T1))
+T2_e= sum(T2/length(T2))
+T3_e= sum(T3/length(T3))
 
 % Build Transfer Function
 s= tf('s');
 sys= (K)/((T1_e*s+1)*(T2_e*s+1));
+% sys= (K*(T3_e*s+1))/((T1_e*s+1)*(T2_e*s+1));
 sys1= (sys*exp(-s*0.01))
 % [num, den]= tfdata(sys, 'v');
 
 % Plot approximated step response
 % Obtain step response with delay.
 figure(2)
+% [ys, ts]= lsim(sys, dataT(:, 4), t);
 [ys, ts]= step(sys1, 'r-', 0.5);
 plot(t, Vcap, 'b-');
 hold on;
