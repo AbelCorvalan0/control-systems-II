@@ -42,7 +42,7 @@ D= coeffs(poly_den, s, 'All');
 disp('Normalized Transfer Function')
 TF= poly_num/poly_den
 
-latex_str= latex(TF)
+latex_str= latex(TF);
 % Laa= 366e-6;
 % J  = 5e-9;
 % Ra = 55.6;
