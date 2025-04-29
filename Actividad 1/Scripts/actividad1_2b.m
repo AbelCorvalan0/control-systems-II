@@ -93,17 +93,17 @@ t0 = t0(1001:end,1);
 %i= 1251;
 i= 25;
 t_inic= t0(i)
-% Define step.
-h= 200;
+% % Define step.
+% h= 200;
 % Obtain y1.
-t_t1= t0(i)
-y_t1= y(i)
+t_t1= t0(i);
+y_t1= y(i);
 % Obtain y2.
-t_2t1= t0(2*i)
-y_2t1= y(2*i)
+t_2t1= t0(2*i);
+y_2t1= y(2*i);
 % Obtain y3.
-t_3t1= t0(3*i)
-y_3t1= y(3*i)
+t_3t1= t0(3*i);
+y_3t1= y(3*i);
 
 delayTime= 0.01;
 
@@ -162,12 +162,12 @@ sys= chenMethod(y_t1, y_2t1, y_3t1, K, stepAmplitude, delayTime, t_t1, 2)
 figure(2)
 [ys, ts]= lsim(sys, dataT(:, 4), t);
 plot(t, Vcap, 'b-'); hold on;
-plot(t_t1, y_t1, 'o'); hold on;
-plot(t_2t1, y_2t1, 'o'); hold on;
-plot(t_3t1, y_3t1, 'o'); hold on;
 plot(ts, ys, 'r-');
 xlim([0, 0.025]);
 ylim([0, 13]);
+plot(t_t1, y_t1, 'o'); hold on;
+plot(t_2t1, y_2t1, 'o'); hold on;
+plot(t_3t1, y_3t1, 'o'); hold on;
 legend('Measured', 'Approximated');
 title('Approximation vs Measurement');
 grid on;
@@ -188,9 +188,11 @@ deltaV= (Vcap(1145)-Vcap(1208))/(t(1145)-t(1208));
 it= Is(1145);
 
 C= it/(deltaV)
-% FT= (1/(LC))/(s^2+s*(R/L)+(1/L*C))
-FTn= minreal(sys)
-[num, den]= tfdata(FTn, 'v');
+% FT= (1/(LC))/(s^2+s*(R/L)+(C/L))
+sys
+[num, den]= tfdata(sys, 'v');
+% FTn= minreal(sys);
+% [num, den]= tfdata(FTn, 'v');
 
-L= 1/(den(3)*C)
-R= den(2)*L
+L= den(1)/C
+R= den(2)/C

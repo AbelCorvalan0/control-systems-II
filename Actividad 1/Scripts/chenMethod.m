@@ -4,9 +4,9 @@ function [X]= chenMethod(y1, y2, y3, g, stepAmplitude, delayTime, t_t1, zr)
 
 K= g/stepAmplitude
 
-y_1= y1/g;
-y_2= y2/g;
-y_3= y3/g;
+y_1= (y1/stepAmplitude);
+y_2= (y2/stepAmplitude);
+y_3= (y3/stepAmplitude);
 
 % Calculating k1, k2, k3.
 % k1= ((y1)/K)-1;
@@ -29,7 +29,7 @@ beta= (k1+alfa2)/(alfa1-alfa2);
 
 % Calculating the estimates of the time constants T1, T2 and T3.
 T1_e= -(t_t1-delayTime)/(log(alfa1))
-T2_e= -(t_t1-delayTime)/(log(alfa2)) %imaginary from alfa2
+T2_e= -(t_t1-delayTime)/(log(alfa2)) 
 T3_e= beta*(T1_e- T2_e)+ T1_e;
 % T1_e= -(t_t1)/(log(alfa1));
 % T2_e= -(t_t1)/(log(alfa2));
@@ -52,7 +52,7 @@ switch zr
     case 0
         sys= (K*exp(-s*delayTime))/((T1_e*s+1)*(T2_e*s+1));
     case 1
-        sys= (K*(T3_e*s+1)*exp(-s*delayTime))/((T1_e*s+1)*(T2_e*s+1));
+        sys= (K*(T3_e*s+1))/((T1_e*s+1)*(T2_e*s+1));
     case 2
         sys= (K)/((T1_e*s+1)*(T2_e*s+1));
     otherwise

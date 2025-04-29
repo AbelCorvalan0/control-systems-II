@@ -1,15 +1,9 @@
-function [X]= rlcModel(A, B, c, D, u)
+function [X]= rlcModel(r, l, c, u)
 clear all; close all; clc;
 
 %% State variables representation of the system.
 % [xp] = A*[x] + B*[u]
 % [y]  = C*[x] + D*[u]
-
-%% Design parameters.
-R= 127.7277;     % [Ohm].
-C= 3.9434e-06;   % [F].
-L= 0.0027;       % [Hy].
-vin= 12;         % [V].
 
 %% Operation point.
 % Initial values x(0)
@@ -20,10 +14,12 @@ y(1)   = 0;        % Output.
 Xop    = [0, 0]';
 x      = [Il(1) Vrl(1)]'; 
 
+R= r; L= l; C= c;
+
 %% State Space.
-A= [-R/L -1/L; 1/C 0];   % State matrix.
-B= [1/L; 0];             % Input matrix.
-c= [R 0];                % Output matrix.
+A= [-R/L -1/L; 1/C 0]   % State matrix.
+B= [1/L; 0]             % Input matrix.
+c= [R 0]                % Output matrix.
 D= 0;                    % Direct transmission matrix.
 
 %% Obtain Transfer Function.
@@ -48,5 +44,5 @@ y(ii)   = Y(1);
 Il(ii)  = x(1);
 Vrl(ii) = x(2);
 
+X= [y];
 end
-X= [y]

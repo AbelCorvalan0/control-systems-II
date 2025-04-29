@@ -1,4 +1,4 @@
 $$\begin{equation}
-\frac{2\,R\,\mathrm{sinh}\left(\frac{t\,\sqrt{R^2-4\,C\,L}}{2\,L}\right)\,{\mathrm{e}}^{-\frac{R\,t}{2\,L}}}{\sqrt{R^2-4\,C\,L}}
+\frac{R\,s}{L\,\left(\frac{C}{L}+s^2+\frac{R\,s}{L}\right)}
 \end{equation}
 $$
