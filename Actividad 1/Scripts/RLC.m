@@ -22,7 +22,7 @@ yt= ilaplace((1/s)*(FT));
 
 %[N, D]= numden(FT)
 %latex_str= latex(ilaplace(FT));
-latex_str= latex(G);
+latex_str= latex(G)
 
 file= fopen('RLC equation.md', 'w');
 fprintf(file, '$$\\begin{equation}\n%s\n\\end{equation}\n$$', latex_str);

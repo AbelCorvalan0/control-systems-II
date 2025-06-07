@@ -45,3 +45,6 @@ disp('Normalized Transfer Function')
 TF= poly_num/poly_den
 
 latex_str= latex(TF)
+
+Ki= 0.1448
+Bm= 0

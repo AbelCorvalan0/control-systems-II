@@ -73,13 +73,21 @@ for i= 1: h-1
     Y= c*(x-Xop)+D*u(i);
 
     ii= i+1;
-    y(ii)= Y(1);
+    y(ii) = Y(1);
     Il(ii)= x(1);
-    Vrl(ii)= x(2);
+    Vc(ii)= x(2);
 end
 
 %% Plot system response
 figure(1)
-plot(t, y)
-ylim([-9, 5])
-grid;
+subplot(3, 1, 1);
+plot(t, u); title('Input Signal v_{e}(t)');
+ylabel('Voltage [V]'); xlabel('Time [seconds]');
+ylim([-13, 13]); grid on;
+subplot(3, 1, 2);
+plot(t, y); title('Capacitor Voltage v_{c}(t)');
+ylabel('Voltage [V]'); xlabel('Time [seconds]');
+ylim([-9, 5]); grid on;
+subplot(3, 1, 3);
+plot(t, Vc); title('Current i_{a}(t)');
+ylabel('Current [A]'); xlabel('Time [seconds]'); grid on;

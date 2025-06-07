@@ -28,18 +28,18 @@ Vcap= dataT(:,3);
 figure(1)
 subplot(2, 1, 1);
 plot(t, Vcap, 'b-', 'LineWidth', 1);
-title('Capacitor voltage V_c');
+title('Capacitor Voltage v_{c}(t)');
 ylabel('Voltage [V]');
-xlabel('Time [seg]');
+xlabel('Time [seconds]');
 ylim([-15, 15]);
 grid on;
 hold on;
 
 subplot(2, 1, 2);
 plot(t, Is, 'r-', 'LineWidth', 1);
-title('Current I');
+title('Current i_{a}(t)');
 ylabel('Current [A]');
-xlabel('Time [seg]');
+xlabel('Time [seconds]');
 grid on;
 hold off;
 
@@ -90,20 +90,20 @@ t0 = t0(1001:end,1);
 % Chen Method application
 % Take three point to apply Chen Method.
 % First point time.
-%i= 1251;
-i= 25;
+i= 35;
 t_inic= t0(i)
+disp('Disp')
 % % Define step.
 % h= 200;
 % Obtain y1.
-t_t1= t0(i);
-y_t1= y(i);
+t_t1= t0(i)
+y_t1= y(i)
 % Obtain y2.
-t_2t1= t0(2*i);
-y_2t1= y(2*i);
+t_2t1= t0(2*i)
+y_2t1= y(2*i)
 % Obtain y3.
-t_3t1= t0(3*i);
-y_3t1= y(3*i);
+t_3t1= t0(3*i)
+y_3t1= y(3*i)
 
 delayTime= 0.01;
 
@@ -162,14 +162,16 @@ sys= chenMethod(y_t1, y_2t1, y_3t1, K, stepAmplitude, delayTime, t_t1, 2)
 figure(2)
 [ys, ts]= lsim(sys, dataT(:, 4), t);
 plot(t, Vcap, 'b-'); hold on;
-plot(ts, ys, 'r-');
-xlim([0, 0.025]);
-ylim([0, 13]);
+%plot(ts, ys, 'r-');
+xlim([0, 0.025]); ylim([0, 13]);
+xlabel('Time [seconds]'); ylabel('Voltage [V]');
 plot(t_t1, y_t1, 'o'); hold on;
 plot(t_2t1, y_2t1, 'o'); hold on;
 plot(t_3t1, y_3t1, 'o'); hold on;
-legend('Measured', 'Approximated');
-title('Approximation vs Measurement');
+% legend('Measured', 'Approximated');
+legend('Measured');
+% title('Approximation vs Measurement');
+title('Step Response');
 grid on;
 tab= [ts, ys];
 
@@ -183,8 +185,16 @@ writematrix(tab, filename, 'WriteMode', 'append');
 
 %% Obtain Parameters R, L, C.
 % Capacitor value calculate.
+disp('Voltage')
+Vcap(1145)
+Vcap(1208)
+disp('Time')
+t(1145)
+t(1208)
+disp('Current')
+Is(1145)
 
-deltaV= (Vcap(1145)-Vcap(1208))/(t(1145)-t(1208));
+deltaV= (Vcap(1145)-Vcap(1208))/(t(1145)-t(1208))
 it= Is(1145);
 
 C= it/(deltaV)

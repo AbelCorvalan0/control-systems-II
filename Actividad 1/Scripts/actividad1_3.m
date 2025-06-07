@@ -1,9 +1,11 @@
 clear all; close all; clc;
 %%% Obtain Parameters R, L, C %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-R= 119.6863;
-C= 3.9434e-06;
-L= 0.0011;
+% R= 119.6863;
+% C= 3.9434e-06;
+% L= 0.0011;
+
+C=3.9434e-6; R= 122.1229; L= 0.0016; 
 
 %% Simulate State-Space 
 num= [C 0];
@@ -47,7 +49,7 @@ x      = [Il(1) Vrl(1)]';
 %% State Space.
 A= [-R/L -1/L; 1/C 0];   % State matrix.
 B= [1/L; 0];             % Input matrix.
-c= [R 0];                % Output matrix.
+c= [1 0];                % Output matrix.
 D= 0;                    % Direct transmission matrix.
 
 for i=1: h-1
@@ -85,7 +87,7 @@ dataT= table2array(data);
 t1= dataT(:,1);
 Is= dataT(:,2);
 Vcap= dataT(:,3);
-%max(Is)
+max(Is)
 
 figure(1)
 subplot(3, 1, 1);
