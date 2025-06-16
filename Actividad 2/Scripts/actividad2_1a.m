@@ -9,18 +9,18 @@ data;
 dataT= table2array(data);
 
 % Obtain time(t), capacitor voltage(Vcap) and current(I) array.
-te   = dataT(:, 1);
-wr  = dataT(:, 2);
-I   = dataT(:, 3);
-Va  = dataT(:, 4);
-tl  = dataT(:, 5);
-disp('Lenght of tl vector')
-length(te)
-disp('Maximium value time.')
-max(te)
-
-disp('Time simulation: ')
-tint= te(2)-te(1)
+% te   = dataT(:, 1);
+% wr  = dataT(:, 2);
+% I   = dataT(:, 3);
+% Va  = dataT(:, 4);
+% tl  = dataT(:, 5);
+% disp('Lenght of tl vector')
+% length(te)
+% disp('Maximium value time.')
+% max(te)
+% 
+% disp('Time simulation: ')
+% tint= te(2)-te(1)
 
 %% Define system parameters.
 %
@@ -55,7 +55,7 @@ ia(1)    = 0;
 wr(1)    = 0;
 theta(1) = 0;
 
-X= [ ia(1); wr(1); theta(1) ]';
+x= [ ia(1) wr(1) theta(1) ];
 
 sys= ss(A, B, C, D)
 
@@ -197,24 +197,74 @@ t = 0:h:(simTime-h);
 ref = pi/2 * ones(size(t)); % Begin with pi/2 value.
 Tl  = zeros(1, length(t));
 
+C
+
+stateVector = [ ia(1)  wr(1)  theta(1) ]'
+
+zeta(1)  = 0;
+integ(1) = zeta(1);
 
 for i = 1:(simTime/h)
     
-    % Build torque signal
+    % Build torque signal (Tl)
     if t(i) >= 0.701 && t(i) <= 1.0
         Tl(i) = 0.12; % Amplitude.
     else
         Tl(i) = 0;    % Amplitude out of work time.
     end
 
-    % Cambio de referencia (ref) cada 5 segundos (alterna entre +pi/2 y -pi/2)
-    if mod(floor(t(i)), 10) < 5  % Cambia cada 5 segundos (5s positivo, 5s negativo)
+    % Toggle reference (ref) each 5 seconds 
+    % (alternate between +pi/2 y -pi/2).
+    if mod(floor(t(i)), 10) < 5  % Toggle each 5 seconds.
         ref(i) =  pi/2;
     else
         ref(i) = -pi/2;
     end
+    
+    % Derivated error.
+    zetaP   = ref(i) - C*stateVector;
+    % Integral of error.
+    zeta(i) = integ + zetaP * h;
+    
+    % Control signal.
+    u(i)= -K*stateVector - KI*zeta(i);
+    
+    % Load new state values.
+    ia(i)    = x(1);
+    wr(i)    = x(2);
+    theta(i) = x(3);
+
+    % Calculate of states.
+    x1P = -Ra*x(1)/La - Km*x(2)/La + u(i)/La;
+    x2P =  Ki*x(1)/Jm - Bm*x(2)/Jm - Tl(i)/Jm;
+    x3P =  x(2);
+
+    xP  = [ x1P  x2P  x3P ]';
+
+    x   = x + h*xP;
+    stateVector= [ ia(i)  wr(i)  theta(i) ]';
+    integ= zeta(i);
+
 end
 
-figure(1)
-subplot(2, 1, 1); plot(t, Tl , 'LineWidth', 1.5);
-subplot(2, 1, 2); plot(t, ref, 'LineWidth', );
+figure(1);
+subplot(4, 1, 1); plot(t, ref, '--', 'Color', [1 0.5 0]);
+hold on; plot(t, theta, 'b', 'LineWidth', 1.5); 
+xlim([0, 20]); grid on;
+title('Reference \theta(t)'); 
+xlabel('Time (Seconds)'); ylabel('Angular position (rad)')
+
+subplot(4, 1, 2); plot(t, u, 'LineWidth', 1.5);
+xlim([0, 20]); ylim([-2.3, 2.3]); grid on;
+title('Control signal u(t)');
+xlabel('Time (Seconds)'); ylabel('Voltage (Volt)');
+
+subplot(4, 1, 3); plot(t, Tl, 'LineWidth', 1.5);
+xlim([0, 20]); ylim([0, 0.15]); grid on;
+title('Torque T_{l}(t)');
+xlabel('Time (Seconds)'); ylabel('Torque (Nm)');
+
+subplot(4, 1, 4); plot(t, ia, 'LineWidth', 1.5);
+xlim([0, 20]); ylim([-0.7, 0.7]); grid on;
+title('Current i_{a}(t)');
+xlabel('Time (Seconds)'); ylabel('Current (Ampere)');

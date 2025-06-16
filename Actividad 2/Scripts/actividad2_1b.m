@@ -204,6 +204,10 @@ stateVector = [ ia(1)  wr(1)  theta(1) ]'
 zeta(1)  = 0;
 integ(1) = zeta(1);
 
+%% Observator building.
+
+
+
 for i = 1:(simTime/h)
     
     % Build torque signal (Tl)
@@ -247,11 +251,24 @@ for i = 1:(simTime/h)
 
 end
 
-% figure(1);
-% subplot(2, 1, 1); plot(t, ref, 'LineWidth', 1.5);
-% xlim([0, 20]);
-% subplot(2, 1, 2); plot(t, Tl , 'LineWidth', 1.5);
-% xlim([0, 20]); ylim([0, 0.15]);
+figure(1);
+subplot(4, 1, 1); plot(t, ref, '--', 'Color', [1 0.5 0]);
+hold on; plot(t, theta, 'b', 'LineWidth', 1.5); 
+xlim([0, 20]); grid on;
+title('Reference \theta(t)'); 
+xlabel('Time (Seconds)'); ylabel('Angular position (rad)')
 
-figure(1); plot(t, ia, 'LineWidth', 1.5);
-xlim([0, 10])
+subplot(4, 1, 2); plot(t, u, 'LineWidth', 1.5);
+xlim([0, 20]); ylim([-2.3, 2.3]); grid on;
+title('Control signal u(t)');
+xlabel('Time (Seconds)'); ylabel('Voltage (Volt)');
+
+subplot(4, 1, 3); plot(t, Tl, 'LineWidth', 1.5);
+xlim([0, 20]); ylim([0, 0.15]); grid on;
+title('Torque T_{l}(t)');
+xlabel('Time (Seconds)'); ylabel('Torque (Nm)');
+
+subplot(4, 1, 4); plot(t, ia, 'LineWidth', 1.5);
+xlim([0, 20]); ylim([-0.7, 0.7]); grid on;
+title('Current i_{a}(t)');
+xlabel('Time (Seconds)'); ylabel('Current (Ampere)');
