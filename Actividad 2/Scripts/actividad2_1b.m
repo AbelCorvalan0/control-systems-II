@@ -40,39 +40,31 @@ A= [-Ra/La -Km/La  0;
        0      1    0];
 
 % Input matrix.
-B= [1/La    0 ;
-     0   -1/Jm;
-     0      0 ];
+B= [ 1/La ;
+      0   ;
+      0   ];
 
 % Output Matrix.
 C= [0 0 1];
 
 D= [0 0];
 
-%% Initial conditions.
-Xop      = [0 0 0]';
-ia(1)    = 0;
-wr(1)    = 0;
-theta(1) = 0;
-
-x= [ ia(1) wr(1) theta(1) ];
-
-sys= ss(A, B, C, D)
+%sys= ss(A, B, C, D)
 
 %% Controllability verification.
 % Controllability matrix calculation.
-Co= ctrb(sys)
+%Co= ctrb(sys)
 % It allows us if the system can be carried brought into a any state
 % in a limited time.
 
 % Range of controllability matrix.
 %rank_Co= rank(Co);
 
-if rank(Co) == size(A, 1)
-    disp('Sistema controlable');
-else
-    error('Sistema no controlable');
-end   
+%if rank(Co) == size(A, 1)
+%    disp('Sistema controlable');
+%else
+%    error('Sistema no controlable');
+%end   
 
 %% Define LQR Controller.
 % Build Q matrix (weight of state error).
@@ -114,7 +106,7 @@ Aa= [  A  zeros(3,1) ;
 Ba= [  B(:,1)  ; 
           0    ];
 
-Ca= [ C 0 ];
+Ca= [ C 0 ]
 
 %% Control signal u(t).
 % The control signal is determinated by:
@@ -197,16 +189,38 @@ t = 0:h:(simTime-h);
 ref = pi/2 * ones(size(t)); % Begin with pi/2 value.
 Tl  = zeros(1, length(t));
 
-C
+%% Initial conditions.
+ia(1)    = 0;
+wr(1)    = 0;
+theta(1) = 0;
 
-stateVector = [ ia(1)  wr(1)  theta(1) ]'
+stateVector = [ ia(1)  wr(1)  theta(1) ]';
+
+Xop      = [0 0 0]';
+
+x= [ ia(1) wr(1) theta(1) ]';
 
 zeta(1)  = 0;
 integ(1) = zeta(1);
 
 %% Observator building.
+% Duallity system.
+% Not augment system implemented.
+% Open-loop.
 
+Ao = A'
+Bo = C'
+Co = B'
 
+Qo = diag([1, 1, 0.1])
+Ro = 10;
+
+Ko = lqr(Ao, Bo, Qo, Ro)
+
+obsStateVector = [  ia(1)  wr(1)  theta(1)  ]';
+xObs = [ 0 0 0 ]';
+
+% Ca(1:3) toma estados del vector, EXCLUYE DERIVADA DEL ERROR.
 
 for i = 1:(simTime/h)
     
@@ -225,50 +239,90 @@ for i = 1:(simTime/h)
         ref(i) = -pi/2;
     end
     
-    % Derivated error.
-    zetaP   = ref(i) - C*stateVector;
+    % Error derivated.
+    zetaP   = ref(i) - Ca(1:3)*stateVector - Ca(4)*integ;
     % Integral of error.
-    zeta(i) = integ + zetaP * h;
-    
+    zeta(i) = integ + zetaP * h; 
     % Control signal.
     u(i)= -K*stateVector - KI*zeta(i);
-    
     % Load new state values.
     ia(i)    = x(1);
     wr(i)    = x(2);
-    theta(i) = x(3);
-
+    theta(i) = x(3); 
     % Calculate of states.
     x1P = -Ra*x(1)/La - Km*x(2)/La + u(i)/La;
     x2P =  Ki*x(1)/Jm - Bm*x(2)/Jm - Tl(i)/Jm;
     x3P =  x(2);
-
-    xP  = [ x1P  x2P  x3P ]';
-
+    
+    xP  = [ x1P  x2P  x3P ]'; 
     x   = x + h*xP;
-    stateVector= [ ia(i)  wr(i)  theta(i) ]';
-    integ= zeta(i);
+
+    iaO(i)    = xObs(1);
+    wrO(i)    = xObs(2);
+    thetaO(i) = xObs(3);
+
+    y0(i) = C*obsStateVector;
+    y(i)  = Ca(1:3)*stateVector + Ca(4)*integ;
+    
+    xTP  = A*xObs + B*u(i) + Ko*(y(:, i) - y0(:, i));
+    xObs = xObs + xTP*h;
+
+    stateVector    = [ ia(i)  wr(i)  theta(i) ]';
+    integ          = zeta(i);
+    obsStateVector = [ iaO(i)  wrO(i) thetaO(i) ]';
 
 end
 
-figure(1);
-subplot(4, 1, 1); plot(t, ref, '--', 'Color', [1 0.5 0]);
-hold on; plot(t, theta, 'b', 'LineWidth', 1.5); 
-xlim([0, 20]); grid on;
-title('Reference \theta(t)'); 
-xlabel('Time (Seconds)'); ylabel('Angular position (rad)')
+%% 
+% La corriente observada es:
+figure(1)
+plot(t, iaO,'LineWidth',1.5)
+xlabel('Tiempo [seg]')
+ylabel('Corriente [A]')
+title('Corriente de armadura i_a observada')
+grid
+%% 
+% Ahora, para comparar con la real obtenida anteriormente:
+figure(2)
+plot(t, iaO,'LineWidth', 1.5); hold on;
+plot(t, ia, 'LineWidth', 1.5);
+xlabel('Time (seconds)'); ylabel('Current (Ampere)');
+title('Armature current i_a')
+legend('Observada', 'Real')
+grid on
+hold off
+%% 
+% Es posible apreciar un error en la aproximación realizada mediante el observador. 
+% A continuación se muestra la evolución de ese error.
 
-subplot(4, 1, 2); plot(t, u, 'LineWidth', 1.5);
-xlim([0, 20]); ylim([-2.3, 2.3]); grid on;
-title('Control signal u(t)');
-xlabel('Time (Seconds)'); ylabel('Voltage (Volt)');
+% obsError(1) = 0;
+% for i = 1:(simTime/h)
+%     obsError(i) = (realIa.ia(i)-iaO(i));
+% end
+% plot(t,obsError,'LineWidth',1.5)
+% xlabel('Tiempo [seg]')
+% ylabel('Error [A]')
+% title('Error de observación')
+% grid
 
-subplot(4, 1, 3); plot(t, Tl, 'LineWidth', 1.5);
-xlim([0, 20]); ylim([0, 0.15]); grid on;
-title('Torque T_{l}(t)');
-xlabel('Time (Seconds)'); ylabel('Torque (Nm)');
-
-subplot(4, 1, 4); plot(t, ia, 'LineWidth', 1.5);
-xlim([0, 20]); ylim([-0.7, 0.7]); grid on;
-title('Current i_{a}(t)');
-xlabel('Time (Seconds)'); ylabel('Current (Ampere)');
+% figure(1);
+% subplot(4, 1, 1); plot(t, ref, '--', 'Color', [1 0.5 0]);
+% hold on; plot(t, theta, 'b', 'LineWidth', 1.5); 
+% xlim([0, 20]); grid on;
+% title('Reference \theta(t)'); 
+% xlabel('Time (Seconds)'); ylabel('Angular position (rad)')
+% 
+% subplot(4, 1, 2); plot(t, u, 'LineWidth', 1.5);
+% xlim([0, 20]); ylim([-2.3, 2.3]); grid on;
+% title('Control signal u(t)');
+% xlabel('Time (Seconds)'); ylabel('Voltage (Volt)');
+% 
+% subplot(4, 1, 3); plot(t, Tl, 'LineWidth', 1.5);
+% xlim([0, 20]); ylim([0, 0.15]); grid on;
+% title('Torque T_{l}(t)');
+% xlabel('Time (Seconds)'); ylabel('Torque (Nm)');
+% 
+% subplot(4, 1, 4); plot(t, ia, 'LineWidth', 1.5);
+% xlim([0, 20]); ylim([-0.7, 0.7]); grid on;
+% title('Current i_{a}(t)');
+% xlabel('Time (Seconds)'); ylabel('Current (Ampere)');
