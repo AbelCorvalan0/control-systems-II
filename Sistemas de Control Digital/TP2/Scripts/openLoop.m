@@ -1,5 +1,5 @@
-clear all; close all;
-clc
+% clear all; close all;
+% clc
 
 %%%%% Import libraries.
 %pkg load control
@@ -88,3 +88,56 @@ step(F);
 % (takes 1.35 amplitude and allowed value is 1.05).
 % Test cancelling pole between marks.
 
+% Kfin= Kp + Kd
+% c= Kd/(Kp + Kd)= Kd /K
+
+%% Cálculo de ganacias controlador PD.
+
+K= 0.23357
+c= 0.7663
+Kd= c*K
+Kp= K - Kd
+
+% Paleta de colores personalizada
+col_salida      = [0 0.4470 0.7410];  % azul
+col_controlador = [0.4660 0.6740 0.1880]; % verde
+col_error       = [0.8500 0.3250 0.0980];  % rojo
+col_derivativa  = [0.4940 0.1840 0.5560];  % violeta
+col_integral    = [0.9290 0.6940 0.1250];  % mostaza
+col_proporcional= [0.3010 0.7450 0.9330];  % celeste
+
+subplot(3,2,1);
+plot(tout, yout(:,1), 'Color', col_salida, 'LineWidth', 1.5);
+title('1. Salida del sistema');
+xlabel('Tiempo [s]'); ylabel('Salida');
+grid on;
+
+subplot(3,2,2);
+plot(tout, yout(:,2), 'Color', col_controlador, 'LineWidth', 1.5);
+title('2. Salida del controlador');
+xlabel('Tiempo [s]'); ylabel('u(t)');
+grid on;
+
+subplot(3,2,3);
+plot(tout, yout(:,3), 'Color', col_error, 'LineWidth', 1.5);
+title('3. Error');
+xlabel('Tiempo [s]'); ylabel('e(t)');
+grid on;
+
+subplot(3,2,4);
+plot(tout, yout(:,4), 'Color', col_derivativa, 'LineWidth', 1.5);
+title('4. Acción derivativa');
+xlabel('Tiempo [s]'); ylabel('D(t)');
+grid on;
+ 
+subplot(3,2,5);
+plot(tout, yout(:,5), 'Color', col_integral, 'LineWidth', 1.5);
+title('5. Acción integral');
+xlabel('Tiempo [s]'); ylabel('I(t)');
+grid on;
+
+subplot(3,2,6);
+plot(tout, yout(:,6), 'Color', col_proporcional, 'LineWidth', 1.5);
+title('6. Acción proporcional');
+xlabel('Tiempo [s]'); ylabel('P(t)');
+grid on;

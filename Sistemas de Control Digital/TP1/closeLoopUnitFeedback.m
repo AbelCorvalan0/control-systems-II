@@ -2,8 +2,8 @@ clear all; close all;
 clc
 
 %%%%% Import libraries.
-pkg load control
-pkg load symbolic
+%pkg load control
+%pkg load symbolic
 syms s real
 
 %%%%% Define values.
