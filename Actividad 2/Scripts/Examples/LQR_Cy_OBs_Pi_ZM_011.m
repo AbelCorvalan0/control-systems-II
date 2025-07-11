@@ -136,16 +136,17 @@ for ci =1:T_CI
     title('Modelo no lineal','FontSize',TamanioFuente);xlabel('Tiempo en Seg.','FontSize',TamanioFuente);ylabel('Funcional J','FontSize',TamanioFuente);hold on;
     ylabel('$J(x,u)$','Interpreter','latex','Rotation',0,'FontSize',TamanioFuente);hold on;
 end
+an= 30;
 % print(hfig2,'Pendulo_fase','-dpng');
 hfig1 = figure(1); set(hfig1, 'Visible', 'on');
 subplot(3,2,1);plot(t,Mat_datoalfa);grid on;title('\phi_t','FontSize',TamanioFuente);hold on;
-xlim([0, 60]);
+xlim([0, an]);
 subplot(3,2,2);plot(t,Mat_datoomega);grid on; title('$\dot{\phi_t}$','Interpreter','latex','FontSize',TamanioFuente);hold on; xlim([0, 60]);
 subplot(3,2,3); plot(t,Mat_datop);grid on;title('\delta_t','FontSize',TamanioFuente);hold on;
-xlim([0, 60]);
+xlim([0, an]);
 subplot(3,2,4);plot(t,Mat_datop_p);grid on;title('$\dot{\delta_t}$','Interpreter','latex','FontSize',TamanioFuente);hold on; xlim([0, 60]);
 subplot(3,1,3);plot(t,Mat_datou);grid on;title('Acción de control','FontSize',TamanioFuente);xlabel('Tiempo en Seg.','FontSize',TamanioFuente);hold on;
-xlim([0, 60]);
+xlim([0, an]);
 % print(hfig1,'Pendulo_t','-dpng');
 % % save('Datos_Controlador.mat','-v7')
 % break

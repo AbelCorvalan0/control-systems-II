@@ -215,6 +215,8 @@ Co = B'
 Qo = diag([1, 1, 0.1])
 Ro = 10;
 
+% Ro disminuiir y agregar otra variable
+
 Ko = lqr(Ao, Bo, Qo, Ro)
 
 obsStateVector = [  ia(1)  wr(1)  theta(1)  ]';
@@ -285,7 +287,7 @@ grid
 % Ahora, para comparar con la real obtenida anteriormente:
 figure(2)
 plot(t, iaO,'LineWidth', 1.5); hold on;
-plot(t, ia, 'LineWidth', 1.5);
+plot(t, ia, 'LineWidth', 1.5); xlim([0, 15]);
 xlabel('Time (seconds)'); ylabel('Current (Ampere)');
 title('Armature current i_a')
 legend('Observada', 'Real')

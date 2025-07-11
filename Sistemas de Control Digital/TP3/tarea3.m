@@ -9,8 +9,8 @@ clc;
 m= 2;
 
 mnom=m % masa nominal
-%m=0.9*mnom % correr de nuevo el código de simulación, dibujo y analisis
-m=1.1*mnom % ídem
+m1=0.9*mnom % correr de nuevo el código de simulación, dibujo y analisis
+m2=1.1*mnom % ídem
 
 b= 0.3;
 l= 1;
@@ -31,7 +31,9 @@ rank(ctrb(A, B))
 
 %% Torque de equilibrio.
 
-uf= m*G*l*sin(delta)
+uf= m*G*l*sin(delta*pi/180)
+uf1= m1*G*l*sin(delta*pi/180)
+uf2= m2*G*l*sin(delta*pi/180)
 
 %% 2
 %% Introducir integral del error.
@@ -111,3 +113,100 @@ Intf=-accint(end) % acción integral final
 
 % verificar sobrepaso. 
 % Tiempo de establecimiento real vs calculado.
+
+m_nom = 2;
+variaciones_masa = [1.8, 2, 2.2];
+colores = ['r', 'g', 'b']; % colores para las 3 curvas
+labels = {'1.8 m', '2 m', '2.2 m'};
+
+figure(10); hold on; title('Salida \theta(t)')
+figure(11); hold on; title('Plano de fases ')
+figure(12); hold on; title('Torque aplicado')
+figure(13); hold on; title('Acción integral')
+
+for i = 1:3
+    m = variaciones_masa(i) * m_nom;
+    sim('pendulo_pid_tarea');
+    
+    figure(10)
+    plot(tout, yout, 'DisplayName', labels{i})
+    
+    figure(11)
+    plot(yout, velocidad, 'DisplayName', labels{i})
+    
+    figure(12)
+    plot(tout, torque, 'DisplayName', labels{i})
+    
+    figure(13)
+    plot(tout, -accint, 'DisplayName', labels{i})
+end
+
+for f = 10:13
+    figure(f)
+    legend
+    xlabel('Tiempo [s]')
+    grid on
+end
+
+%%% Robustez
+
+m_nom = 1;
+variaciones_masa = [0.9, 1.0, 1.1];
+resultados = zeros(3, 4); % Columnas: sobrepaso, tss, uf, Intf
+
+for i = 1:3
+    m = variaciones_masa(i) * m_nom;
+    sim('pendulo_pid_tarea')
+
+    ymax = max(yout);
+    S = (ymax - delta)/delta * 100;
+    erel = (delta - yout)/delta;
+    ind = find(abs(erel) > 0.02);
+    tss = tout(ind(end));
+    uf = torque(end);
+    Intf = -accint(end);
+
+    resultados(i,:) = [S, tss, uf, Intf];
+end
+
+% Mostrar tabla
+fprintf('\nTabla de robustez (masa variable):\n');
+fprintf('Masa\t\tSobrepaso (%%)\tTs (s)\t\tUf\t\tIntf\n');
+for i = 1:3
+    fprintf('%.2f\t\t%.2f\t\t\t%.2f\t\t%.2f\t\t%.2f\n', ...
+        variaciones_masa(i)*m_nom, resultados(i,1), resultados(i,2), resultados(i,3), resultados(i,4));
+end
+%%
+m_nom = 2;
+variaciones_masa = [1.8, 2, 2.2];
+colores = ['r', 'g', 'b']; % colores para las 3 curvas
+labels = {'1.8 m', '2 m', '2.2 m'};
+
+figure(10); hold on; title('Respuesta angular \theta(t)')
+figure(11); hold on; title('Plano de fases (\theta, \dot{\theta})')
+figure(12); hold on; title('Torque aplicado')
+figure(13); hold on; title('Acción integral acumulada')
+
+for i = 1:3
+    m = variaciones_masa(i) * m_nom;
+    sim('pendulo_pid_tarea');
+    
+    figure(10)
+    plot(tout, yout, 'DisplayName', labels{i})
+    
+    figure(11)
+    plot(yout, velocidad, 'DisplayName', labels{i})
+    
+    figure(12)
+    plot(tout, torque, 'DisplayName', labels{i})
+    
+    figure(13)
+    plot(tout, -accint, 'DisplayName', labels{i})
+end
+
+for f = 10:13
+    figure(f)
+    legend
+    xlabel('Tiempo [s]')
+    grid on
+end

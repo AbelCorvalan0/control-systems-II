@@ -318,15 +318,15 @@ xlabel('Time (Seconds)'); ylabel('Torque (Nm)');
 
 subplot(5, 1, 4); plot(t, ia, 'LineWidth', 1.5);
 xlim([0, 20]); ylim([-0.7, 1]); grid on; hold on;
-plot(t, ia1+0.3, 'LineWidth', 1.5);
+plot(t, ia1, 'LineWidth', 1.5);
 legend('w/ linear ctrl signal', 'w/ nonlinear ctrl signal + .3V DC offset');
 title('Current i_{a}(t)');
 xlabel('Time (Seconds)'); ylabel('Current (Ampere)');
 
-subplot(5, 1, 5); plot(t, theta, 'LineWidth', 1.5);
-xlim([0, 20]); ylim([-2.5, 2.5]); 
+subplot(5, 1, 5); plot(t, wr, 'LineWidth', 1.5);
+xlim([0, 20]); %ylim([-2.5, 2.5]); 
 grid on; hold on;
-plot(t, theta1+.3, 'LineWidth', 1.5);
+plot(t, wr1, 'LineWidth', 1.5);
 legend('w/ linear ctrl signal', 'w/ nonlinear ctrl signal + .3V DC offset');
 title('Angular position \theta(t)');
 xlabel('Time (Seconds)'); ylabel('Angular position (rad)');

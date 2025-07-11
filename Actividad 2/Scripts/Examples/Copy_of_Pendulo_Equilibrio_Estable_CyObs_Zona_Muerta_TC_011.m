@@ -1,4 +1,4 @@
-clc;clear all;
+clc;clear all; close all;
 Ts=0.01;KMAX=2500;T=Ts*KMAX;
 m=.1;Fricc=0.1; long=0.6;g=9.8;M=.5;
 TamanioFuente=12;
@@ -56,11 +56,13 @@ P=real(MX2*inv(MX1));
 Ko=(inv(Rdual)*Mat_Bdual'*P)';
 % break
 t=0; x=[0;0;alfa(1);0];
-x=[10;0;pi;0];
+% Position 0, ... , angle 0, ...
+x=[0;0;0;0];
 p(1)=x(1); p_p(1)=x(2); alfa(1)=x(3); omega(1)=x(4);
 tl=(0:KMAX-1)*Ts;
 x=[0;0;alfa(1);0];
-h=Ts;ref=0;tita_pp=0;x_hat=[0;0;0;0];
+x=[0;0;0;0];
+h=Ts;ref=10;tita_pp=0;x_hat=[0;0;0;0];
 um=0;%Zona muerta .1
 for ki=1:KMAX
     estado=[p(ki); p_p(ki); alfa(ki); omega(ki)];

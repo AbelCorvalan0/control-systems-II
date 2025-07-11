@@ -72,10 +72,10 @@ ang= wd*Ts
 %sisotool(Gd)
 %kp= dcgain(Gd)
 
-F= feedback(Gd, 1)
+%F= feedback(Gd, 1)
 
 %C
-%F= feedback(C*Gd, 1)
+F= feedback(C*Gd, 1)
 pole(F)
 zero(F)
 pzmap(F)
